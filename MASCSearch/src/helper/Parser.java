@@ -68,7 +68,7 @@ public class Parser {
 			WarcRecord record;
 			int j = 0;
 		//	System.out.println("analizzo documento: " + warc);
-			while ((record = reader.getNextRecord()) != null && j!=300) {
+			while ((record = reader.getNextRecord()) != null /* && j!=300*/) {
 
 				++records;
 
@@ -76,7 +76,7 @@ public class Parser {
 					Document d = printRecord(record);
 					writer.addDocument(d);
 					j++;
-					System.out.println(j + " sono entrato in un ciclo ");
+					System.out.println(j + " record ");
 					//printRecordErrors(record);
 					//errors += record.diagnostics.getErrors().size();
 				}
@@ -121,6 +121,7 @@ public class Parser {
 		String[] prova = getPayload(record);
 		doc.add(new TextField("title",prova[0], Field.Store.YES));
 		doc.add(new TextField("body",prova[1], Field.Store.YES));
+		doc.add(new TextField("payload",prova[2], Field.Store.YES));
 
 
 		return doc;
@@ -144,13 +145,17 @@ public class Parser {
 
 		String[] text = new String[3];
 		text[0] = "Title: ";
+		text[2] = "Payload: ";
 
 		for(Element div : doc.select("title")){
 			text[0] = text[0].concat(div.text()+"\n");
+			text[2] = text[2].concat(div.text()+"\n");
+			
 		}
 		text[1] = "Body: ";
 		for(Element div : doc.select("body")){
 			text[1] = text[1].concat(div.text()+"\n");
+			text[2] = text[2].concat(div.text()+"\n");
 		}
 
 		return text;

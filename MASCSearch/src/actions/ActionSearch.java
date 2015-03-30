@@ -1,6 +1,8 @@
 package actions;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
@@ -11,7 +13,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.search.ScoreDoc;
 
 /**
  * Servlet implementation class FirstPageAction
@@ -40,6 +45,20 @@ public class ActionSearch extends HttpServlet {
 		ServletContext application = getServletContext();
 		HttpSession session = request.getSession();
 		session.setAttribute("query",query);
+		
+		try {
+			ArrayList<Document> hits = helper.Searcher.mkQuery(query);
+			session.setAttribute("hits", hits);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		/*try {
+			helper.Searcher.mkQuery(query);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
 		RequestDispatcher rd = application.getRequestDispatcher("/results.jsp");
 		rd.forward(request, response);
 
