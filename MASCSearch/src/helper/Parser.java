@@ -41,8 +41,8 @@ public class Parser {
 		StandardAnalyzer analyzer = new StandardAnalyzer( CharArraySet.EMPTY_SET);
 
 		/* create the index in the pathToFolder or in RAM (choose one) */
-		File file = new File("pathToFolder");
-		Path path = Paths.get("/home/matteo/Scrivania/");
+		//File file = new File("pathToFolder");
+		Path path = Paths.get(System.getProperty("user.dir")+"/index/");
 		Directory index = FSDirectory.open(path);
 		//Directory index =new RAMDirectory();
 

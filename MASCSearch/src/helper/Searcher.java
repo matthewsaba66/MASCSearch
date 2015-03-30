@@ -29,8 +29,9 @@ public class Searcher {
 		StandardAnalyzer analyzer = new StandardAnalyzer( CharArraySet.EMPTY_SET);
 
 		/* create the index in the pathToFolder or in RAM (choose one) */
-		File file1 = new File("pathToFolder");
-		Path path = Paths.get("index");
+		//File file1 = new File("pathToFolder");
+		
+		Path path = Paths.get(System.getProperty("user.dir")+"/git/MASCSearch/MASCSearch/index/");
 		Directory index = FSDirectory.open(path);
 		//Directory index =new RAMDirectory();
 		
