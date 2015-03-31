@@ -39,7 +39,7 @@
 	%>
 	<br></br>
 	<%
-		out.print(d.get("body"));
+		out.print(d.get("body").replaceAll("[^\\w\\s]", ""));
 		}
 	%><br></br>
 	<br></br>

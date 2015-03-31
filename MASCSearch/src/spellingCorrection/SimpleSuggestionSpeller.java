@@ -32,14 +32,14 @@ public class SimpleSuggestionSpeller {
         spellChecker.indexDictionary(dictionary, config, true);
        
         
-        String wordForSuggestions = "aa";
+        String wordForSuggestions = "world";
         
         int suggestionsNumber = 5;
 
         String[] suggestions = spellChecker.
             suggestSimilar(wordForSuggestions, suggestionsNumber);
 
-        if (suggestions!=null && suggestions.length>0) {
+        if (!spellChecker.exist(wordForSuggestions) && suggestions!=null && suggestions.length>0) {
             for (String word : suggestions) {
                 System.out.println("Did you mean:" + word);
             }

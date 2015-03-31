@@ -40,7 +40,7 @@ public class Searcher {
 		//Directory index =new RAMDirectory();
 		
 		/* set the maximum number of results */
-		int maxHits = 10;
+		int maxHits = 999999;
 
 		/* open a directory reader and create searcher and topdocs */
 		IndexReader reader1 = DirectoryReader.open(index);
