@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -25,6 +26,7 @@ import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.RAMDirectory;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
+import org.jwat.common.Diagnosis;
 import org.jwat.warc.WarcReader;
 import org.jwat.warc.WarcReaderFactory;
 import org.jwat.warc.WarcRecord;
@@ -34,7 +36,7 @@ public class Parser {
 	public static void main(String[] args) throws IOException{
 		getIndex();
 	}
-	
+
 	public static IndexWriter getIndex() throws IOException{
 
 		/* create a standard analyzer */
@@ -42,7 +44,8 @@ public class Parser {
 
 		/* create the index in the pathToFolder or in RAM (choose one) */
 		//File file = new File("pathToFolder");
-		Path path = Paths.get(System.getProperty("user.dir")+"/index/");
+		//Path path = Paths.get(System.getProperty("user.dir")+"/index/");
+		Path path = Paths.get("/home/matteo/Scrivania/index/");
 		Directory index = FSDirectory.open(path);
 		//Directory index =new RAMDirectory();
 
@@ -53,21 +56,21 @@ public class Parser {
 		IndexWriter writer = new IndexWriter(index, config);
 
 		/*get file list of warc's to analyze*/
-		List<String> fileList = listFilesForFolder(new File("/home/matteo/CRAWL/Decompressi/"));
+		List<String> fileList = listFilesForFolder(new File("/home/matteo/CRAWL/Decompressi/clue/"));
 
 		int records = 0;
-		
-	//	for (String warc : fileList){
 
-			InputStream in = new FileInputStream(new File("/home/matteo/CRAWL/Decompressi/00.warc"/* + warc*/ ));
+		for (String warc : fileList){
 
-			
-			//int errors = 0;
+			InputStream in = new FileInputStream(new File("/home/matteo/CRAWL/Decompressi/clue/" + warc ));
+
+
+			int errors = 0;
 
 			WarcReader reader = WarcReaderFactory.getReader( in );
 			WarcRecord record;
 			int j = 0;
-		//	System.out.println("analizzo documento: " + warc);
+			System.out.println("analizzo documento: " + warc);
 			while ((record = reader.getNextRecord()) != null /* && j!=300*/) {
 
 				++records;
@@ -84,11 +87,12 @@ public class Parser {
 			System.out.println("--------------");
 			System.out.println("       Records: " + records);
 			//System.out.println("        Errors: " + errors);
+			System.out.println(warc);
 			reader.close();
 			in.close();
-		
-	//	}
-		
+
+		}
+
 		writer.close();
 
 		return writer;
@@ -112,14 +116,22 @@ public class Parser {
 	private static Document printRecord(WarcRecord record) throws IOException {
 		// TODO Auto-generated method stub
 		Document doc = new Document();
-		doc.add(new StringField("type", record.header.contentTypeStr, Field.Store.YES));
+		//if else null
+		if (record.header.contentTypeStr != null){
+			doc.add(new StringField("type", record.header.contentTypeStr, Field.Store.YES));
+		}
+		else doc.add(new StringField("type","Type non presente", Field.Store.YES));
 
 		if(record.header.warcTargetUriUri!=null){
-			doc.add(new TextField("url", record.header.warcTargetUriUri.toString(), Field.Store.YES));
+			Field url = new TextField("url", record.header.warcTargetUriUri.toString(), Field.Store.YES);
+			doc.add(url);
 		}
+		else doc.add(new StringField("url","Url non presente", Field.Store.YES));
 		//doc.add(new TextField("title",getTitle(record), Field.Store.YES));
 		String[] prova = getPayload(record);
-		doc.add(new TextField("title",prova[0], Field.Store.YES));
+		Field title = new TextField("title",prova[0], Field.Store.YES);
+		title.setBoost(2f);
+		doc.add(title);
 		doc.add(new TextField("body",prova[1], Field.Store.YES));
 		doc.add(new TextField("payload",prova[2], Field.Store.YES));
 
@@ -150,7 +162,7 @@ public class Parser {
 		for(Element div : doc.select("title")){
 			text[0] = text[0].concat(div.text()+"\n");
 			text[2] = text[2].concat(div.text()+"\n");
-			
+
 		}
 		text[1] = "Body: ";
 		for(Element div : doc.select("body")){
@@ -159,6 +171,24 @@ public class Parser {
 		}
 
 		return text;
+	}
+
+	public static void printRecordErrors(WarcRecord record) {
+		System.out.println("---- Errors:");
+		if (record.diagnostics.hasErrors()) {
+			List<Diagnosis> errorCol = record.diagnostics.getErrors();
+			if (errorCol != null && errorCol.size() > 0) {
+				Iterator<Diagnosis> iter = errorCol.iterator();
+				while (iter.hasNext()) {
+					Diagnosis error = iter.next();
+					System.out.println( "Type:" + error.type );
+					System.out.println( "Entity: "+ error.entity );
+					for( String info : error.information ) {
+						System.out.println( "Info: "+ info );
+					}
+				}
+			}
+		}
 	}
 
 }

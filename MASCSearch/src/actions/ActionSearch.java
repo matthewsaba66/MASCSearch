@@ -1,5 +1,7 @@
 package actions;
 
+import helper.SearchResult;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,8 +49,16 @@ public class ActionSearch extends HttpServlet {
 		session.setAttribute("query",query);
 		
 		try {
-			ArrayList<Document> hits = helper.Searcher.mkQuery(query);
-			session.setAttribute("hits", hits);
+			SearchResult searchResult = helper.Searcher.mkQuery(query);
+			session.setAttribute("hits", searchResult.getTopHits());
+			session.setAttribute("originalQuery", searchResult.getOriginalQuery());
+			session.setAttribute("suggestedQuery", searchResult.getSuggestedQuery());			
+			session.setAttribute("totalHitCount", searchResult.getTotalHitCount());
+			session.setAttribute("searchDuration", searchResult.getSearchDuration());
+
+
+
+			
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

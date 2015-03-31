@@ -23,8 +23,12 @@ import org.apache.lucene.store.FSDirectory;
 
 public class Searcher {
 	
-	public static ArrayList<Document> mkQuery(String query) throws IOException, ParseException{
-		
+    private Searcher didYouMeanParser;
+
+	
+	public static SearchResult mkQuery(String query) throws IOException, ParseException{
+        long startTime = System.currentTimeMillis();
+
 		/* create a standard analyzer */
 		StandardAnalyzer analyzer = new StandardAnalyzer( CharArraySet.EMPTY_SET);
 
@@ -45,12 +49,10 @@ public class Searcher {
 				TopScoreDocCollector.create(maxHits);
 
 		/* create the query parser */
-
 		QueryParser qp = new QueryParser("payload", analyzer);
 
 
 		/* query string */
-		
 		Query q = qp.parse(query);
 
 		
@@ -60,10 +62,11 @@ public class Searcher {
 		
 		
 		//return hits;
-		
-		System.out.println("Found " + hits.length + " hits.");
+		long endTime = System.currentTimeMillis();
+		//System.out.println("Found " + hits.length + " hits.");
 		
 		ArrayList<Document> docList = new ArrayList<Document>();
+		
 		for(int i=0;i<hits.length;++i) {
 			int docId = hits[i].doc;
 			Document d = searcher.doc(docId);
@@ -72,8 +75,10 @@ public class Searcher {
 			//System.out.println("url: " + d.get("url")+ "\n" + d.get("title")+ d.get("body"));
 			//System.out.println("-------------------------------------------\n\n\n\n");
 		}
+		SearchResult searchResult = new SearchResult
+				(docList, hits.length, endTime-startTime, query);
 		
-		return docList;
+		return searchResult;
 	}
 
 }

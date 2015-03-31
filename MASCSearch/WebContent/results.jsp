@@ -11,22 +11,37 @@
 </head>
 <body>
 	Risultati per:
-	<%= session.getAttribute("query") %>
+	<%=session.getAttribute("originalQuery")%>
 	<form action="indietro" method="get">
 
 		<input type="submit" name="submit" value="torna indietro" />
 
 	</form>
 
-	<% ArrayList<Document> list= (ArrayList<Document>)session.getAttribute("hits");
-	for (Document d : list){ %><br></br>
-	<%	out.print("Url: " + d.get("url"));%>
+	Trovati
+	<%=session.getAttribute("totalHitCount")%>
+	risultati in:
+	<%=session.getAttribute("searchDuration")%>
+	millisecondi
 	<br></br>
+	<%
+		ArrayList<Document> list = (ArrayList<Document>) session
+				.getAttribute("hits");
+		for (Document d : list) {
+	%><br></br>
+	<%
+		out.print("Url: " + d.get("url"));
+	%>
+
 	<br></br>
-	<%out.print(d.get("title")); %><br></br>
+	<%
+		out.print(d.get("title"));
+	%>
 	<br></br>
-	<%out.print(d.get("body"));
-		}%><br></br>
+	<%
+		out.print(d.get("body"));
+		}
+	%><br></br>
 	<br></br>
 
 
