@@ -1,3 +1,4 @@
+<%@page import="helper.ContaParole"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ page import="java.util.ArrayList"%>
@@ -24,7 +25,11 @@
 	<%=session.getAttribute("searchDuration")%>
 	millisecondi
 	<br></br>
-	<%
+  	<% String query = (String)session.getAttribute("originalQuery");
+ 	long count = ContaParole.wordCount(query);
+ 	if ((Integer)session.getAttribute("totalHitCount")<15 && count == 1) {%>
+	Forse stavi cercando: <% out.print(session.getAttribute("suggestedQuery")); }%>
+	<% 
 		ArrayList<Document> list = (ArrayList<Document>) session
 				.getAttribute("hits");
 		for (Document d : list) {
@@ -38,8 +43,16 @@
 		out.print(d.get("title"));
 	%>
 	<br></br>
-	<%
-		out.print(d.get("body").replaceAll("[^\\w\\s]", ""));
+	<% 
+	String body = d.get("body").replaceAll("[^\\w\\s]", "");
+	/* int index = body.indexOf((String)session.getAttribute("originalQuery"));
+	int delta = 0;
+	int limInf = index - delta;
+	int limSup = index + delta;
+	
+	String result = "..."+ body.substring(limInf, limSup)+"...";
+		out.print(result);*/
+		out.print(body);
 		}
 	%><br></br>
 	<br></br>
