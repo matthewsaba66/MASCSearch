@@ -100,7 +100,7 @@ form {
 			<input type="text" class="inputbox" name="query"> </br> </br>
 			<div align="center">
 				<button type="submit" name="submit" class="classname" value="Search">
-					Search</button>
+					Search   </button>
 			</div>
 		</form>
 	</div>
