@@ -7,6 +7,8 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+import spellingCorrection.SimpleSuggestionSpeller;
+
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.util.CharArraySet;
 import org.apache.lucene.document.Document;
@@ -26,21 +28,21 @@ public class Searcher {
     private Searcher didYouMeanParser;
 
 	
-	public static SearchResult mkQuery(String query) throws IOException, ParseException{
+	public static SearchResult mkQuery(String query) throws Exception{
         long startTime = System.currentTimeMillis();
 
 		/* create a standard analyzer */
-		StandardAnalyzer analyzer = new StandardAnalyzer( CharArraySet.EMPTY_SET);
+		StandardAnalyzer analyzer = new StandardAnalyzer(CharArraySet.EMPTY_SET);
 
 		/* create the index in the pathToFolder or in RAM (choose one) */
 		//File file1 = new File("pathToFolder");
 		
-		Path path = Paths.get(System.getProperty("user.dir")+"/git/MASCSearch/MASCSearch/index/");
+		Path path = Paths.get("C:/Users/orangepc/git/MASCSearch/MASCSearch/index/");
 		Directory index = FSDirectory.open(path);
 		//Directory index =new RAMDirectory();
 		
 		/* set the maximum number of results */
-		int maxHits = 999999;
+		int maxHits = 30;
 
 		/* open a directory reader and create searcher and topdocs */
 		IndexReader reader1 = DirectoryReader.open(index);
@@ -75,9 +77,10 @@ public class Searcher {
 			//System.out.println("url: " + d.get("url")+ "\n" + d.get("title")+ d.get("body"));
 			//System.out.println("-------------------------------------------\n\n\n\n");
 		}
-		SearchResult searchResult = new SearchResult
-				(docList, hits.length, endTime-startTime, query);
+		String suggestedQuery = spellingCorrection.SimpleSuggestionSpeller.spellingCorrection(query);
 		
+		SearchResult searchResult = new SearchResult
+				(docList, hits.length, endTime-startTime, query, suggestedQuery);
 		return searchResult;
 	}
 

@@ -59,7 +59,7 @@ public class ActionSearch extends HttpServlet {
 
 
 			
-		} catch (ParseException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

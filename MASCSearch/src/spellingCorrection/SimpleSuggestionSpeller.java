@@ -14,41 +14,37 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
 public class SimpleSuggestionSpeller {
-    
-    public static void main(String[] args) throws Exception {
-    	/* create a standard analyzer */
+
+	public static String spellingCorrection(String query) throws Exception {
+		/* create a standard analyzer */
 		NGramAnalyzer analyzer = new NGramAnalyzer(2);
 		IndexWriterConfig config = new IndexWriterConfig( analyzer);
-    	
-        //File dir = new File("c:/spellchecker/");
-        Path dirPath = Paths.get(System.getProperty("user.dir")+"/index/");
-        
-        Directory directory = FSDirectory.open(dirPath);
-        Path dictPath = Paths.get("/home/matteo/Scrivania/dict.txt");
 
-        PlainTextDictionary dictionary = new PlainTextDictionary(dictPath);
-        
-        SpellChecker spellChecker = new SpellChecker(directory);
-        spellChecker.indexDictionary(dictionary, config, true);
-       
-        
-        String wordForSuggestions = "world";
-        
-        int suggestionsNumber = 5;
+		//File dir = new File("c:/spellchecker/");
+		Path dirPath = Paths.get("C:/Users/orangepc/git/MASCSearch/MASCSearch/index/");
 
-        String[] suggestions = spellChecker.
-            suggestSimilar(wordForSuggestions, suggestionsNumber);
+		Directory directory = FSDirectory.open(dirPath);
+		Path dictPath = Paths.get("C:/Users/orangepc/git/MASCSearch/MASCSearch/dict.txt");
 
-        if (!spellChecker.exist(wordForSuggestions) && suggestions!=null && suggestions.length>0) {
-            for (String word : suggestions) {
-                System.out.println("Did you mean:" + word);
-            }
-        }
-        else {
-            System.out.println("No suggestions found for word:"+wordForSuggestions);
-        }
-        spellChecker.close();
-            
-    }
+		PlainTextDictionary dictionary = new PlainTextDictionary(dictPath);
 
+		SpellChecker spellChecker = new SpellChecker(directory);
+		spellChecker.indexDictionary(dictionary, config, true);
+
+
+		String wordForSuggestions = query;
+
+		int suggestionsNumber = 1;
+
+		String[] suggestions = spellChecker.
+				suggestSimilar(wordForSuggestions, suggestionsNumber);
+		String suggestion =null;
+		if (!spellChecker.exist(wordForSuggestions) && suggestions!=null && suggestions.length>0) {
+			for (String word : suggestions) {
+				suggestion = word;
+			}
+		}
+		spellChecker.close();
+		return suggestion; 
+	}
 }

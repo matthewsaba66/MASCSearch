@@ -56,20 +56,20 @@ public class Parser {
 		IndexWriter writer = new IndexWriter(index, config);
 
 		/*get file list of warc's to analyze*/
-		List<String> fileList = listFilesForFolder(new File("/home/matteo/CRAWL/Decompressi/clue/"));
+		List<String> fileList = listFilesForFolder(new File("/home/matteo/CRAWL/Decompressi/cCrawl/"));
 
-		int records = 0;
+		long records = 0;
 
 		for (String warc : fileList){
 
-			InputStream in = new FileInputStream(new File("/home/matteo/CRAWL/Decompressi/clue/" + warc ));
+			InputStream in = new FileInputStream(new File("/home/matteo/CRAWL/Decompressi/cCrawl/" + warc ));
 
 
 			int errors = 0;
 
 			WarcReader reader = WarcReaderFactory.getReader( in );
 			WarcRecord record;
-			int j = 0;
+			long j = 0;
 			System.out.println("analizzo documento: " + warc);
 			while ((record = reader.getNextRecord()) != null /* && j!=300*/) {
 
